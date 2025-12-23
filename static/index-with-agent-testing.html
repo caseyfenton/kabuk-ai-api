@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HafH - AI Agent Testing Env</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+
+        .main-panel {
+            overflow-y: auto;
+        }
+
+        .agent-panel {
+            background: #1a1a1a;
+            border-radius: 12px;
+            overflow: hidden;
+            position: sticky;
+            top: 20px;
+            height: calc(100vh - 40px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .agent-header {
+            background: #2a2a2a;
+            padding: 15px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .agent-header h2 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .agent-status {
+            color: #44ff44;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .agent-tools {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+
+        .tool-section {
+            margin-bottom: 20px;
+        }
+
+        .tool-section h3 {
+            color: #44aaff;
+            font-size: 13px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .tool-btn {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 6px;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            background: #667eea;
+            transform: translateX(4px);
+        }
+
+        .tool-btn:active {
+            background: #5568d3;
+        }
+
+        .agent-log {
+            background: #2a2a2a;
+            border-left: 3px solid #44ff44;
+            padding: 8px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #ccc;
+        }
+
+        .agent-log.success {
+            border-color: #44ff44;
+            background: #1a2a1a;
+        }
+
+        .agent-log.error {
+            border-color: #ff4444;
+            background: #2a1a1a;
+            color: #ffaaaa;
+        }
+
+        .agent-log-time {
+            color: #666;
+            font-size: 10px;
+            margin-right: 6px;
+        }
+
+        .dom-inspector {
+            background: #2a2a2a;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            font-size: 11px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dom-inspector h4 {
+            color: #ffaa44;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .dom-inspector pre {
+            color: #aaa;
+            font-family: monospace;
+            font-size: 10px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        /* Previous styles from original demo */
+        .container {
+            max-width: 1200px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .demo-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .context-info {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .property-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        .property-card.highlight {
+            border: 3px solid #667eea;
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+        }
+
+        .property-image {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 3rem;
+        }
+
+        .property-content {
+            padding: 20px;
+        }
+
+        .property-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .property-location {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+        }
+
+        .property-description {
+            color: #4b5563;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .property-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: #f3f4f6;
+            color: #4b5563;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+
+        .property-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .book-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .book-btn:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-panel">
+        <div class="container">
+            <div class="header">
+                <h1>🏡 HafH AI Concierge</h1>
+                <p>Agent Testing Environment</p>
+            </div>
+
+            <div class="demo-section">
+                <div id="context-info" class="context-info" style="display: none;">
+                    <strong>🎯 Agent Context:</strong> <span id="context-text"></span>
+                </div>
+
+                <div id="properties-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="agent-panel">
+        <div class="agent-header">
+            <h2>🤖 AI Agent Control Panel</h2>
+            <div class="agent-status">● ACTIVE - Testing Mode</div>
+        </div>
+
+        <div class="agent-tools">
+            <div class="dom-inspector" id="dom-state">
+                <h4>📊 Current DOM State</h4>
+                <pre id="dom-state-content">No data yet...</pre>
+            </div>
+
+            <div class="tool-section">
+                <h3>🔍 Property Display Tools</h3>
+                <button class="tool-btn" onclick="agentTest.showMountainOnsens()">
+                    showProperties - Mountain Onsens
+                </button>
+                <button class="tool-btn" onclick="agentTest.showKyotoStays()">
+                    showProperties - Kyoto Traditional
+                </button>
+                <button class="tool-btn" onclick="agentTest.showSkiResorts()">
+                    showProperties - Ski Resorts
+                </button>
+            </div>
+
+            <div class="tool-section">
+                <h3>✨ Property Highlighting</h3>
+                <button class="tool-btn" onclick="agentTest.highlightFirst()">
+                    highlightProperty - First Property
+                </button>
+                <button class="tool-btn" onclick="agentTest.highlightBest()">
+                    highlightProperty - Best Match (with reason)
+                </button>
+                <button class="tool-btn" onclick="agentTest.clearHighlight()">
+                    Clear Highlights
+                </button>
+            </div>
+
+            <div class="tool-section">
+                <h3>📖 Property Details</h3>
+                <button class="tool-btn" onclick="agentTest.openDetail()">
+                    openPropertyDetail - First Property
+                </button>
+            </div>
+
+            <div class="tool-section">
+                <h3>🧹 Display Control</h3>
+                <button class="tool-btn" onclick="agentTest.clearAll()">
+                    clearDisplay
+                </button>
+            </div>
+
+            <div class="tool-section">
+                <h3>🔬 DOM Inspection</h3>
+                <button class="tool-btn" onclick="agentTest.inspectDOM()">
+                    Inspect Current DOM
+                </button>
+                <button class="tool-btn" onclick="agentTest.countProperties()">
+                    Count Properties in DOM
+                </button>
+                <button class="tool-btn" onclick="agentTest.checkHighlights()">
+                    Check Highlighted Properties
+                </button>
+            </div>
+
+            <div id="agent-logs" style="margin-top: 20px;">
+                <!-- Agent action logs will appear here -->
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Sample property data
+        const SAMPLE_PROPERTIES = {
+            mountain_onsens: [
+                {
+                    pid: "12345",
+                    name: "Mountain Onsen Retreat",
+                    prefecture: "Nagano",
+                    country: "JP",
+                    ts_text: "Peaceful mountain retreat with natural hot springs",
+                    ts_stay_text: "Experience traditional Japanese hospitality in our mountain onsen resort. Surrounded by pristine nature with breathtaking views of the Japanese Alps.",
+                    tags: ["Hot Springs", "Mountain", "Traditional"],
+                    coins: 450
+                },
+                {
+                    pid: "23456",
+                    name: "Alpine Onsen Lodge",
+                    prefecture: "Nagano",
+                    country: "JP",
+                    ts_text: "Secluded onsen with mountain views",
+                    ts_stay_text: "Nestled in the mountains with private outdoor baths and stunning alpine scenery.",
+                    tags: ["Hot Springs", "Mountain", "Luxury"],
+                    coins: 520
+                },
+                {
+                    pid: "34567",
+                    name: "Valley Hot Springs",
+                    prefecture: "Nagano",
+                    country: "JP",
+                    ts_text: "Natural hot springs in peaceful valley",
+                    ts_stay_text: "Traditional ryokan with indoor and outdoor onsen facilities in a serene mountain valley.",
+                    tags: ["Hot Springs", "Mountain", "Traditional", "Ryokan"],
+                    coins: 380
+                }
+            ],
+            kyoto: [
+                {
+                    pid: "45678",
+                    name: "Kyoto Zen Garden Stay",
+                    prefecture: "Kyoto",
+                    country: "JP",
+                    ts_text: "Traditional machiya house in historic Gion",
+                    ts_stay_text: "Sleep in a beautifully restored traditional townhouse steps from Kyoto's most famous temples and geisha district.",
+                    tags: ["Traditional", "Cultural", "City Center"],
+                    coins: 380
+                },
+                {
+                    pid: "56789",
+                    name: "Temple View Guesthouse",
+                    prefecture: "Kyoto",
+                    country: "JP",
+                    ts_text: "Modern comfort with traditional aesthetics",
+                    ts_stay_text: "Contemporary guesthouse with views of historic temples, walking distance to Philosopher's Path.",
+                    tags: ["Cultural", "Modern", "Views"],
+                    coins: 320
+                }
+            ],
+            ski: [
+                {
+                    pid: "67890",
+                    name: "Hokkaido Snow Lodge",
+                    prefecture: "Hokkaido",
+                    country: "JP",
+                    ts_text: "Ski-in ski-out lodge with amazing powder",
+                    ts_stay_text: "Perfect for winter sports enthusiasts. Direct access to Niseko's world-famous powder snow and après-ski dining.",
+                    tags: ["Skiing", "Winter", "Adventure"],
+                    coins: 520
+                },
+                {
+                    pid: "78901",
+                    name: "Hakuba Mountain Resort",
+                    prefecture: "Nagano",
+                    country: "JP",
+                    ts_text: "Olympic ski resort with modern facilities",
+                    ts_stay_text: "Stay at the slopes of the 1998 Winter Olympics. Modern resort with multiple runs for all skill levels.",
+                    tags: ["Skiing", "Winter", "Resort"],
+                    coins: 480
+                }
+            ]
+        };
+
+        // Global state
+        let currentProperties = [];
+
+        // Agent logging system
+        const agentLog = {
+            add(message, type = 'success') {
+                const timestamp = new Date().toISOString().substr(11, 12);
+                const container = document.getElementById('agent-logs');
+
+                const logEntry = document.createElement('div');
+                logEntry.className = `agent-log ${type}`;
+                logEntry.innerHTML = `
+                    <span class="agent-log-time">${timestamp}</span>
+                    <span>${message}</span>
+                `;
+
+                container.prepend(logEntry);
+
+                // Keep only last 20 logs
+                const logs = container.querySelectorAll('.agent-log');
+                if (logs.length > 20) {
+                    logs[logs.length - 1].remove();
+                }
+
+                // Also log to console for debugging
+                console.log(`[AGENT] ${message}`);
+            }
+        };
+
+        // UI Update Functions
+        function renderProperties(properties) {
+            currentProperties = properties;
+            const container = document.getElementById('properties-container');
+
+            if (!properties || properties.length === 0) {
+                container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 40px;">No properties to display.</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="properties-grid">
+                    ${properties.map(prop => `
+                        <div class="property-card" data-property="${prop.pid}">
+                            <div class="property-image">${getPropertyEmoji(prop)}</div>
+                            <div class="property-content">
+                                <div class="property-name">${prop.name}</div>
+                                <div class="property-location">
+                                    📍 ${prop.prefecture}, ${prop.country}
+                                </div>
+                                <div class="property-description">
+                                    ${prop.ts_stay_text || prop.ts_text}
+                                </div>
+                                <div class="property-tags">
+                                    ${(prop.tags || []).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                                </div>
+                                <div class="property-footer">
+                                    <div style="font-weight: 600; color: #667eea;">
+                                        ${prop.coins} coins/night
+                                    </div>
+                                    <button class="book-btn" onclick="bookProperty('${prop.pid}')">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function getPropertyEmoji(property) {
+            if (property.tags?.includes('Hot Springs')) return '♨️';
+            if (property.tags?.includes('Skiing')) return '⛷️';
+            if (property.tags?.includes('Traditional')) return '🏯';
+            if (property.tags?.includes('Beach')) return '🏖️';
+            return '🏡';
+        }
+
+        function highlightProperty(propertyId, clear = false) {
+            // Remove existing highlights if clearing
+            document.querySelectorAll('.property-card').forEach(card => {
+                if (clear) {
+                    card.classList.remove('highlight');
+                }
+            });
+
+            if (!clear && propertyId) {
+                const card = document.querySelector(`[data-property="${propertyId}"]`);
+                if (card) {
+                    card.classList.add('highlight');
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function updateContext(text) {
+            const contextInfo = document.getElementById('context-info');
+            const contextText = document.getElementById('context-text');
+            contextInfo.style.display = 'block';
+            contextText.textContent = text;
+        }
+
+        // Client Tools (what the agent calls)
+        const clientTools = {
+            showProperties: async ({query, properties}) => {
+                agentLog.add(`🎯 Calling showProperties(query="${query}", ${properties?.length || 0} properties)`, 'success');
+
+                updateContext(`Searching for: "${query}"`);
+
+                renderProperties(properties || []);
+
+                // Update DOM state display
+                agentTest.inspectDOM();
+
+                return {
+                    success: true,
+                    message: `Displayed ${properties?.length || 0} properties for "${query}"`,
+                    count: properties?.length || 0
+                };
+            },
+
+            highlightProperty: async ({propertyId, reason}) => {
+                agentLog.add(`✨ Calling highlightProperty(pid="${propertyId}", reason="${reason || 'N/A'}")`, 'success');
+
+                const success = highlightProperty(propertyId);
+
+                if (reason) {
+                    updateContext(`Highlighting: ${reason}`);
+                }
+
+                // Update DOM state display
+                agentTest.inspectDOM();
+
+                return {
+                    success,
+                    message: success ? `Highlighted property ${propertyId}` : `Property ${propertyId} not found`
+                };
+            },
+
+            openPropertyDetail: async ({propertyId}) => {
+                agentLog.add(`📖 Calling openPropertyDetail(pid="${propertyId}")`, 'success');
+
+                const property = currentProperties.find(p => p.pid === propertyId);
+                if (property) {
+                    alert(`Property Detail:\n\n${property.name}\n${property.prefecture}, ${property.country}\n\n${property.ts_stay_text}\n\nPrice: ${property.coins} coins/night`);
+                    return {success: true};
+                }
+
+                agentLog.add(`❌ Property ${propertyId} not found`, 'error');
+                return {success: false};
+            },
+
+            clearDisplay: async () => {
+                agentLog.add('🧹 Calling clearDisplay()', 'success');
+
+                currentProperties = [];
+                document.getElementById('properties-container').innerHTML = '';
+                document.getElementById('context-info').style.display = 'none';
+                highlightProperty(null, true);
+
+                // Update DOM state display
+                agentTest.inspectDOM();
+
+                return {success: true};
+            }
+        };
+
+        // Agent Testing Interface (simulates agent behavior)
+        window.agentTest = {
+            showMountainOnsens: async () => {
+                const result = await clientTools.showProperties({
+                    query: "mountain hot springs in Nagano",
+                    properties: SAMPLE_PROPERTIES.mountain_onsens
+                });
+                agentLog.add(`✅ Result: ${result.message}`, 'success');
+            },
+
+            showKyotoStays: async () => {
+                const result = await clientTools.showProperties({
+                    query: "traditional Kyoto accommodations",
+                    properties: SAMPLE_PROPERTIES.kyoto
+                });
+                agentLog.add(`✅ Result: ${result.message}`, 'success');
+            },
+
+            showSkiResorts: async () => {
+                const result = await clientTools.showProperties({
+                    query: "ski resorts in Japan",
+                    properties: SAMPLE_PROPERTIES.ski
+                });
+                agentLog.add(`✅ Result: ${result.message}`, 'success');
+            },
+
+            highlightFirst: async () => {
+                if (currentProperties.length > 0) {
+                    const result = await clientTools.highlightProperty({
+                        propertyId: currentProperties[0].pid,
+                        reason: "Agent testing: highlighting first property"
+                    });
+                    agentLog.add(`✅ Result: ${result.message}`, 'success');
+                } else {
+                    agentLog.add('❌ No properties to highlight', 'error');
+                }
+            },
+
+            highlightBest: async () => {
+                if (currentProperties.length > 0) {
+                    const result = await clientTools.highlightProperty({
+                        propertyId: currentProperties[0].pid,
+                        reason: "This property has the best hot springs and mountain views for your preferences"
+                    });
+                    agentLog.add(`✅ Result: ${result.message}`, 'success');
+                } else {
+                    agentLog.add('❌ No properties to highlight', 'error');
+                }
+            },
+
+            clearHighlight: () => {
+                highlightProperty(null, true);
+                agentLog.add('✅ Cleared all highlights', 'success');
+                this.inspectDOM();
+            },
+
+            openDetail: async () => {
+                if (currentProperties.length > 0) {
+                    const result = await clientTools.openPropertyDetail({
+                        propertyId: currentProperties[0].pid
+                    });
+                    agentLog.add(`✅ Result: Opened detail modal`, 'success');
+                } else {
+                    agentLog.add('❌ No properties to show details for', 'error');
+                }
+            },
+
+            clearAll: async () => {
+                const result = await clientTools.clearDisplay();
+                agentLog.add(`✅ Result: Display cleared`, 'success');
+            },
+
+            // DOM Inspection Tools
+            inspectDOM: () => {
+                const propertiesContainer = document.getElementById('properties-container');
+                const propertyCards = propertiesContainer.querySelectorAll('.property-card');
+                const highlightedCards = propertiesContainer.querySelectorAll('.property-card.highlight');
+                const contextInfo = document.getElementById('context-info');
+
+                const domState = {
+                    properties_rendered: propertyCards.length,
+                    highlighted_count: highlightedCards.length,
+                    highlighted_pids: Array.from(highlightedCards).map(card => card.dataset.property),
+                    context_visible: contextInfo.style.display !== 'none',
+                    context_text: contextInfo.style.display !== 'none' ? contextInfo.querySelector('#context-text').textContent : null,
+                    current_properties_state: currentProperties.length,
+                    grid_visible: propertyCards.length > 0
+                };
+
+                // Update DOM state display
+                const stateContent = document.getElementById('dom-state-content');
+                stateContent.textContent = JSON.stringify(domState, null, 2);
+
+                agentLog.add(`🔬 DOM inspected: ${propertyCards.length} cards, ${highlightedCards.length} highlighted`, 'success');
+
+                return domState;
+            },
+
+            countProperties: () => {
+                const count = document.querySelectorAll('.property-card').length;
+                agentLog.add(`🔢 Count: ${count} property cards in DOM`, 'success');
+                return count;
+            },
+
+            checkHighlights: () => {
+                const highlighted = document.querySelectorAll('.property-card.highlight');
+                const pids = Array.from(highlighted).map(card => card.dataset.property);
+                agentLog.add(`✨ Highlighted properties: ${pids.length > 0 ? pids.join(', ') : 'none'}`, 'success');
+                return pids;
+            }
+        };
+
+        // Initialize
+        agentLog.add('🤖 Agent Control Panel initialized', 'success');
+        agentLog.add('📊 Click any tool button to simulate agent actions', 'success');
+        agentTest.inspectDOM();
+
+        console.log('✅ HafH Agent Testing Environment Ready');
+        console.log('📋 Available Client Tools:', Object.keys(clientTools));
+        console.log('🧪 Agent Test Functions:', Object.keys(agentTest));
+    </script>
+</body>
+</html>

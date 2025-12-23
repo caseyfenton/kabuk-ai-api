@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HafH Property - AI Agent Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header .location {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            padding: 20px;
+            background: #f7fafc;
+        }
+
+        .image-placeholder {
+            background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%);
+            aspect-ratio: 4/3;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            transition: transform 0.3s;
+        }
+
+        .image-placeholder:hover {
+            transform: scale(1.05);
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .description {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #4a5568;
+        }
+
+        .pricing {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            color: white;
+            margin: 30px 0;
+        }
+
+        .pricing .coins {
+            font-size: 2.5em;
+            font-weight: bold;
+        }
+
+        .pricing .label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .book-button {
+            background: white;
+            color: #667eea;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-left: auto;
+        }
+
+        .book-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .stories {
+            display: grid;
+            gap: 25px;
+        }
+
+        .story-card {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .story-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .story-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .story-author {
+            color: #718096;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .story-text {
+            color: #4a5568;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #718096;
+            font-size: 1.3em;
+        }
+
+        .amenities {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .amenity-tag {
+            background: #e0e7ff;
+            color: #5a67d8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.95em;
+            font-weight: 500;
+        }
+
+        .agent-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 0.9em;
+            z-index: 1000;
+        }
+
+        .agent-status.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="agent-status" id="agentStatus">
+        ● Agent Ready - Demo Mode
+    </div>
+
+    <div class="container">
+        <div id="propertyContent" class="loading">
+            Loading property information...
+        </div>
+    </div>
+
+    <script>
+        // Property data will be loaded by agent
+        let currentProperty = null;
+
+        // Client Tools for ElevenLabs Agent
+        const clientTools = {
+            /**
+             * Display a property page
+             * @param {Object} property - Property object from database
+             */
+            showProperty: async (property) => {
+                console.log('🏠 Agent calling showProperty:', property);
+
+                currentProperty = property;
+                renderProperty(property);
+
+                document.getElementById('agentStatus').textContent = '● Agent Active - Property Displayed';
+                document.getElementById('agentStatus').classList.add('active');
+
+                return {
+                    success: true,
+                    message: `Displayed property: ${property.name}`,
+                    propertyId: property.pid
+                };
+            },
+
+            /**
+             * Highlight a specific story
+             * @param {number} storyIndex - Index of story to highlight
+             */
+            highlightStory: async (storyIndex) => {
+                console.log('✨ Agent highlighting story:', storyIndex);
+
+                const stories = document.querySelectorAll('.story-card');
+                if (stories[storyIndex]) {
+                    stories[storyIndex].style.background = '#fef3c7';
+                    stories[storyIndex].style.borderLeft = '5px solid #f59e0b';
+                    stories[storyIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    return {
+                        success: true,
+                        message: `Highlighted story ${storyIndex}`
+                    };
+                }
+
+                return {
+                    success: false,
+                    message: `Story ${storyIndex} not found`
+                };
+            },
+
+            /**
+             * Clear the property display
+             */
+            clearProperty: async () => {
+                console.log('🧹 Agent clearing property');
+
+                document.getElementById('propertyContent').innerHTML = `
+                    <div class="loading">
+                        No property displayed. Agent will load property during conversation.
+                    </div>
+                `;
+
+                currentProperty = null;
+
+                document.getElementById('agentStatus').textContent = '● Agent Ready - Awaiting Command';
+                document.getElementById('agentStatus').classList.remove('active');
+
+                return {
+                    success: true,
+                    message: 'Property cleared'
+                };
+            }
+        };
+
+        /**
+         * Render property page
+         */
+        function renderProperty(property) {
+            const stories = collectStoriesForProperty(property);
+
+            const html = `
+                <div class="header">
+                    <h1>${property.name}</h1>
+                    <div class="location">📍 ${property.prefecture}, ${property.country.toUpperCase()}</div>
+                </div>
+
+                ${renderImageGallery(property)}
+
+                <div class="content">
+                    <div class="section">
+                        <h2>About This Property</h2>
+                        <div class="description">
+                            ${property.ts_text || 'Experience authentic Japanese hospitality in this carefully selected property.'}
+                        </div>
+                    </div>
+
+                    ${renderPricing(property)}
+
+                    <div class="section">
+                        <h2>Location</h2>
+                        <div class="description">
+                            📍 ${property.address}
+                        </div>
+                    </div>
+
+                    ${stories.length > 0 ? renderStories(stories) : ''}
+                </div>
+            `;
+
+            document.getElementById('propertyContent').innerHTML = html;
+        }
+
+        /**
+         * Render image gallery
+         */
+        function renderImageGallery(property) {
+            const images = property.stay_images || [];
+            const emojis = ['🏯', '♨️', '🏔️', '🌸', '🎋', '🍜'];
+
+            if (images.length === 0) {
+                return `
+                    <div class="image-gallery">
+                        <div class="image-placeholder">${emojis[Math.floor(Math.random() * emojis.length)]}</div>
+                        <div class="image-placeholder">${emojis[Math.floor(Math.random() * emojis.length)]}</div>
+                        <div class="image-placeholder">${emojis[Math.floor(Math.random() * emojis.length)]}</div>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="image-gallery">
+                    ${images.slice(0, 3).map(img => `
+                        <img src="${img}" alt="${property.name}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        /**
+         * Render pricing section
+         */
+        function renderPricing(property) {
+            // Estimate coins based on prefecture (this would come from real data)
+            const baseCoins = estimateCoins(property);
+
+            return `
+                <div class="pricing">
+                    <div>
+                        <div class="coins">${baseCoins} coins</div>
+                        <div class="label">per night</div>
+                    </div>
+                    <button class="book-button" onclick="bookProperty('${property.pid}')">
+                        Check Availability
+                    </button>
+                </div>
+            `;
+        }
+
+        /**
+         * Estimate coins (placeholder - would use real pricing data)
+         */
+        function estimateCoins(property) {
+            const prefecture = property.prefecture;
+            // Popular destinations typically cost more
+            if (prefecture.includes('京都') || prefecture.includes('東京')) {
+                return Math.floor(Math.random() * 200) + 350; // 350-550
+            }
+            return Math.floor(Math.random() * 150) + 250; // 250-400
+        }
+
+        /**
+         * Collect stories for a property (this would query the full database)
+         */
+        function collectStoriesForProperty(property) {
+            // In real implementation, this would search hafh_stories.json for matching pid
+            // For demo, return sample stories if available
+            if (property.sample_stories) {
+                return property.sample_stories;
+            }
+            return [];
+        }
+
+        /**
+         * Render guest stories section
+         */
+        function renderStories(stories) {
+            return `
+                <div class="section">
+                    <h2>📖 Guest Stories</h2>
+                    <div class="stories">
+                        ${stories.map((story, idx) => `
+                            <div class="story-card" data-story-index="${idx}">
+                                <div class="story-title">${story.title}</div>
+                                <div class="story-author">by ${story.author || 'Guest'} • ${story.stayed || story.publication_day}</div>
+                                <div class="story-text">${story.ts_stay_text || story.highlights}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Handle booking button click
+         */
+        function bookProperty(pid) {
+            console.log('📅 Booking requested for property:', pid);
+            alert(`Agent would now initiate booking flow for property ${pid}`);
+        }
+
+        // Test function to load sample property
+        function loadTestProperty() {
+            const sampleProperty = {
+                "name": "nol kyoto sanjo",
+                "pid": 1542,
+                "prefecture": "京都府",
+                "country": "jpn",
+                "address": "京都府京都市中京区堺町通姉小路下る大阪材木町700番",
+                "latitude": "35.009144",
+                "longitude": "135.763324",
+                "ts_text": "Former sake brewery Kinshi Masamune converted to stylish machiya hotel. Combines vintage Kyoto townhouse with modern functionality.",
+                "stay_images": null,
+                "sample_stories": [
+                    {
+                        "title": "Comfortable Even with a Baby! Stylish Room with Hinoki Bath!",
+                        "author": "ライオンママ",
+                        "stayed": "October 2025",
+                        "highlights": "Stayed with 0-year-old baby. Hotel provided baby bed and fall-prevention fence. Spacious hinoki bath for 3. Towel art and birthday message. Free drinks and snacks in lounge."
+                    },
+                    {
+                        "title": "Delightful Sake Service! Recommended for Families!",
+                        "author": "ma1118yu10432",
+                        "stayed": "November 2025",
+                        "highlights": "2 adults + 2 children. Free sake and soft drinks from check-in. Washing machine, sink, electric stove - great for long stays. Note: no children's pajamas provided."
+                    },
+                    {
+                        "title": "Experience the Charm of Kyoto with a Relaxing Hotel Stay",
+                        "author": "エマ",
+                        "stayed": "October 2025",
+                        "highlights": "Renovated sake brewery with beautiful dark-toned interior and greenery. Relaxing introductory video with music. Compact but convenient with washing machine and microwave. Free sake and soft drinks in lobby."
+                    }
+                ]
+            };
+
+            clientTools.showProperty(sampleProperty);
+        }
+
+        // Expose tools globally for testing
+        window.clientTools = clientTools;
+        window.loadTestProperty = loadTestProperty;
+
+        console.log('✅ HafH Property Page Ready');
+        console.log('🧪 Test: window.loadTestProperty()');
+        console.log('📋 Client Tools:', Object.keys(clientTools));
+    </script>
+</body>
+</html>

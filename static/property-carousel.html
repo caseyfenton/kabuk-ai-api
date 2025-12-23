@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HafH Property</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .carousel-container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            max-height: 90vh;
+        }
+
+        .screen {
+            display: none;
+            padding: 30px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Hero Screen - COMPACT */
+        .hero-screen {
+            background: linear-gradient(135deg, #4a9eff 0%, #357abd 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .hero-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .hero-title {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .hero-location {
+            font-size: 1em;
+            opacity: 0.95;
+            margin-bottom: 15px;
+        }
+
+        .hero-tagline {
+            font-size: 0.95em;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        /* Details Screen */
+        .details-title {
+            font-size: 1.6em;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #4a9eff;
+        }
+
+        .detail-row {
+            margin-bottom: 20px;
+        }
+
+        .detail-label {
+            font-size: 0.75em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 1.1em;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+
+        .pricing-box {
+            background: linear-gradient(135deg, #4a9eff 0%, #357abd 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .pricing-box .amount {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .pricing-box .label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        /* Location Screen */
+        .location-map {
+            background: linear-gradient(135deg, #e0e7ff 0%, #cffafe 100%);
+            height: 200px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .address-box {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #4a9eff;
+        }
+
+        .address-text {
+            font-size: 1em;
+            color: #1a1a1a;
+            line-height: 1.6;
+        }
+
+        /* Stories Screen */
+        .story-highlight {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #4a9eff;
+        }
+
+        .story-highlight-title {
+            font-size: 1.2em;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .story-highlight-author {
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 12px;
+        }
+
+        .story-highlight-text {
+            font-size: 0.95em;
+            color: #333;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* Navigation */
+        .nav-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: #4a9eff;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .nav-buttons {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.9);
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            color: #333;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="carousel-container">
+        <div id="carouselContent">
+            <div style="padding: 60px; text-align: center; color: #666;">
+                <div style="font-size: 3em; margin-bottom: 15px;">🏠</div>
+                <div style="font-size: 1.2em;">Loading property...</div>
+            </div>
+        </div>
+
+        <div class="nav-dots" id="navDots"></div>
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="prevScreen()">← Prev</button>
+            <button class="nav-btn" onclick="nextScreen()">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentProperty = null;
+        let currentScreen = 0;
+        let totalScreens = 0;
+
+        const clientTools = {
+            loadProperty: async (property) => {
+                currentProperty = property;
+                renderCarousel(property);
+                showScreen(0);
+                return {success: true, message: `Loaded ${property.name}`};
+            },
+
+            showScreen: async (screenIndex) => {
+                showScreen(screenIndex);
+                return {success: true, currentScreen: screenIndex};
+            },
+
+            nextScreen: async () => {
+                const nextIndex = (currentScreen + 1) % totalScreens;
+                return await clientTools.showScreen(nextIndex);
+            },
+
+            previousScreen: async () => {
+                const prevIndex = (currentScreen - 1 + totalScreens) % totalScreens;
+                return await clientTools.showScreen(prevIndex);
+            }
+        };
+
+        function renderCarousel(property) {
+            const stories = property.sample_stories || [];
+            const estimatedCoins = estimateCoins(property);
+            totalScreens = 4;
+
+            const html = `
+                <!-- Hero -->
+                <div class="screen hero-screen active" data-screen="0">
+                    <div class="hero-icon">${getPropertyIcon(property)}</div>
+                    <div class="hero-title">${property.name}</div>
+                    <div class="hero-location">📍 ${property.prefecture}, ${property.country.toUpperCase()}</div>
+                    <div class="hero-tagline">${property.ts_text || ''}</div>
+                </div>
+
+                <!-- Details -->
+                <div class="screen" data-screen="1">
+                    <div class="details-title">Property Details</div>
+                    <div class="detail-row">
+                        <div class="detail-label">Property Name</div>
+                        <div class="detail-value">${property.name}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Description</div>
+                        <div class="detail-value">${property.ts_text || 'Authentic Japanese hospitality'}</div>
+                    </div>
+                    <div class="pricing-box">
+                        <div class="amount">${estimatedCoins}</div>
+                        <div class="label">coins per night</div>
+                    </div>
+                </div>
+
+                <!-- Location -->
+                <div class="screen" data-screen="2">
+                    <div class="details-title">Location</div>
+                    <div class="location-map">🗾</div>
+                    <div class="address-box">
+                        <div class="address-text">
+                            ${property.address}<br><br>
+                            <strong>Prefecture:</strong> ${property.prefecture}<br>
+                            <strong>Country:</strong> ${property.country.toUpperCase()}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stories -->
+                <div class="screen" data-screen="3">
+                    <div class="details-title">Guest Reviews</div>
+                    ${stories.length > 0 ? stories.slice(0, 2).map(story => `
+                        <div class="story-highlight">
+                            <div class="story-highlight-title">${story.title}</div>
+                            <div class="story-highlight-author">by ${story.author || 'Guest'} • ${story.stayed || ''}</div>
+                            <div class="story-highlight-text">${story.highlights || story.ts_stay_text || ''}</div>
+                        </div>
+                    `).join('') : '<div style="text-align: center; color: #666; padding: 40px;">No reviews yet</div>'}
+                </div>
+            `;
+
+            document.getElementById('carouselContent').innerHTML = html;
+            renderDots();
+        }
+
+        function showScreen(index) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            if (screens[index]) {
+                screens[index].classList.add('active');
+                currentScreen = index;
+                updateDots();
+            }
+        }
+
+        function renderDots() {
+            const dots = Array(totalScreens).fill(0).map((_, i) =>
+                `<div class="dot ${i === 0 ? 'active' : ''}" onclick="showScreen(${i})"></div>`
+            ).join('');
+            document.getElementById('navDots').innerHTML = dots;
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === currentScreen));
+        }
+
+        function getPropertyIcon(property) {
+            const name = property.name.toLowerCase();
+            if (name.includes('onsen') || name.includes('温泉')) return '♨️';
+            if (name.includes('kyoto') || name.includes('京都')) return '🏯';
+            if (name.includes('mountain') || name.includes('山')) return '🏔️';
+            if (name.includes('beach') || name.includes('海')) return '🏖️';
+            return '🏠';
+        }
+
+        function estimateCoins(property) {
+            const prefecture = property.prefecture;
+            if (prefecture.includes('京都') || prefecture.includes('東京')) {
+                return Math.floor(Math.random() * 200) + 350;
+            }
+            return Math.floor(Math.random() * 150) + 250;
+        }
+
+        function nextScreen() {
+            clientTools.nextScreen();
+        }
+
+        function prevScreen() {
+            clientTools.previousScreen();
+        }
+
+        // Auto-load from localStorage
+        const storedProperty = localStorage.getItem('selectedProperty');
+        if (storedProperty) {
+            try {
+                const property = JSON.parse(storedProperty);
+                const storyData = {
+                    title: property.title,
+                    author: "Guest",
+                    stayed: property.publication_day,
+                    highlights: property.ts_stay_text
+                };
+                property.sample_stories = [storyData];
+                clientTools.loadProperty(property);
+                localStorage.removeItem('selectedProperty');
+            } catch (e) {
+                console.error('Failed to load:', e);
+            }
+        }
+
+        window.clientTools = clientTools;
+        window.showScreen = showScreen;
+        console.log('✅ HafH Property Carousel Ready');
+    </script>
+</body>
+</html>
