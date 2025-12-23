@@ -186,14 +186,14 @@ def build_index_html():
 
         <div class="main">
             <div class="widget-container">
-                <h1>Meet Hana, Your Japan Travel Concierge</h1>
-                <p>Chat with Hana about your Japan trip preferences. She has access to 10,230+ real traveler stories and can help you find the perfect stay.</p>
+                <h1>Meet Kyoko, Your Japan Travel Concierge</h1>
+                <p>Chat with Kyoko about your Japan trip preferences. She has access to 10,230+ real traveler stories and can help you find the perfect stay.</p>
 
                 <div class="elevenlabs-widget">
                     <!-- ElevenLabs widget embed code will go here -->
                     <div class="placeholder">
                         <h3>🎤 Voice AI Widget</h3>
-                        <p>In production, the ElevenLabs Hana agent widget appears here.<br>Users can speak naturally about their travel preferences.</p>
+                        <p>In production, the ElevenLabs Kyoko agent widget appears here.<br>Users can speak naturally about their travel preferences.</p>
                         <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
                             Example: "I want a peaceful mountain retreat with hot springs in Nagano"
                         </p>
