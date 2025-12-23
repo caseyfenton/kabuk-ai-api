@@ -353,6 +353,11 @@ def details():
     response.headers['Content-Type'] = 'text/html; charset=utf-8'
     return response
 
+@app.route('/favicon.ico', methods=['GET'])
+def favicon():
+    """Return 204 No Content for favicon to prevent 404 errors"""
+    return '', 204
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint"""
