@@ -684,15 +684,17 @@ def intelligent_recommend():
         print("="*80 + "\n")
         return jsonify({'success': False, 'error': str(e)}), 500
 
+# Load data at module import time (works with both gunicorn and direct run)
+print("🚀 Starting HafH webhook server...")
+load_sample_data()
+
+# Build and cache landing page HTML for fast delivery
+CACHED_INDEX_HTML = build_index_html()
+print("✅ Landing page cached")
+
+print(f"📊 Serving {len(PROPERTIES)} properties")
+
 if __name__ == '__main__':
-    print("🚀 Starting HafH webhook server...")
-    load_sample_data()
-
-    # Build and cache landing page HTML for fast delivery
-    CACHED_INDEX_HTML = build_index_html()
-    print("✅ Landing page cached")
-
-    print(f"📊 Serving {len(PROPERTIES)} properties")
-    print("🌐 Server running on http://localhost:5000")
-    print("🔍 Search endpoint: POST http://localhost:5000/search")
+    print("🌐 Server running on http://localhost:5001")
+    print("🔍 Search endpoint: POST http://localhost:5001/search")
     app.run(host='0.0.0.0', port=5001, debug=False)
