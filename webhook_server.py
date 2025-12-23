@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 """
 Minimal webhook server for ElevenLabs agent integration
-Provides property search from KABUK travel stories data
+Provides property search from HafH travel stories data
 """
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
 import random
-import os
 
 app = Flask(__name__)
 CORS(app)
@@ -22,10 +21,8 @@ PROPERTIES = []
 def load_sample_data():
     """Load ALL properties from hafh_stories"""
     global PROPERTIES
-    # Use relative path for Render deployment
-    data_path = os.path.join(os.path.dirname(__file__), 'data', 'hafh_stories.json')
     try:
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open('data/hafh_stories.json', 'r', encoding='utf-8') as f:
             stories = json.load(f)  # Load as JSON array
             count = 0
             for story in stories:
@@ -65,12 +62,162 @@ def load_sample_data():
         ]
 
 def build_index_html():
-    """Build landing page HTML once at startup"""
+    """Build simple landing page with embedded ElevenLabs widget"""
+    return f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <title>KABUK AI Travel Assistant</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            :root {{
+                --kabuk-pink: #E91E63;
+                --kabuk-purple: #8B5CF6;
+                --kabuk-dark: #1a1a1a;
+                --kabuk-light: #FAF8F6;
+            }}
+            * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+            body {{
+                font-family: system-ui, -apple-system, sans-serif;
+                background: var(--kabuk-light);
+                color: var(--kabuk-dark);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }}
+            .header {{
+                background: var(--kabuk-dark);
+                padding: 20px 40px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            }}
+            .logo {{
+                font-size: 32px;
+                font-weight: 800;
+                color: var(--kabuk-pink);
+                letter-spacing: 1.5px;
+            }}
+            .subtitle {{
+                color: #999;
+                font-size: 14px;
+                margin-top: 5px;
+            }}
+            .main {{
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 40px 20px;
+            }}
+            .widget-container {{
+                background: white;
+                border-radius: 20px;
+                padding: 40px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+                max-width: 600px;
+                width: 100%;
+                text-align: center;
+            }}
+            .widget-container h1 {{
+                font-size: 32px;
+                margin-bottom: 15px;
+                color: var(--kabuk-dark);
+            }}
+            .widget-container p {{
+                color: #666;
+                font-size: 16px;
+                margin-bottom: 30px;
+                line-height: 1.6;
+            }}
+            .elevenlabs-widget {{
+                min-height: 400px;
+                background: linear-gradient(135deg, var(--kabuk-purple) 0%, #A855F7 100%);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                padding: 40px;
+                margin-bottom: 20px;
+            }}
+            .placeholder {{
+                text-align: center;
+            }}
+            .placeholder h3 {{
+                font-size: 20px;
+                margin-bottom: 10px;
+            }}
+            .placeholder p {{
+                opacity: 0.9;
+                color: white;
+                font-size: 14px;
+            }}
+            .details-link {{
+                display: inline-block;
+                color: var(--kabuk-purple);
+                text-decoration: none;
+                font-size: 14px;
+                margin-top: 20px;
+                transition: opacity 0.2s;
+            }}
+            .details-link:hover {{
+                opacity: 0.7;
+            }}
+            .footer {{
+                background: var(--kabuk-dark);
+                color: #999;
+                padding: 20px;
+                text-align: center;
+                font-size: 12px;
+            }}
+            @media (max-width: 768px) {{
+                .header {{ padding: 15px 20px; }}
+                .logo {{ font-size: 24px; }}
+                .widget-container {{ padding: 25px; }}
+                .widget-container h1 {{ font-size: 24px; }}
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="logo">KABUK</div>
+            <div class="subtitle">AI-Powered Travel Intelligence</div>
+        </div>
+
+        <div class="main">
+            <div class="widget-container">
+                <h1>Meet Hana, Your Japan Travel Concierge</h1>
+                <p>Chat with Hana about your Japan trip preferences. She has access to 10,230+ real traveler stories and can help you find the perfect stay.</p>
+
+                <div class="elevenlabs-widget">
+                    <!-- ElevenLabs widget embed code will go here -->
+                    <div class="placeholder">
+                        <h3>🎤 Voice AI Widget</h3>
+                        <p>In production, the ElevenLabs Hana agent widget appears here.<br>Users can speak naturally about their travel preferences.</p>
+                        <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
+                            Example: "I want a peaceful mountain retreat with hot springs in Nagano"
+                        </p>
+                    </div>
+                </div>
+
+                <a href="/details" class="details-link">📊 View API Details & Technical Info →</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 Kabuk International Inc. • Powered by ElevenLabs Conversational AI
+        </div>
+    </body>
+    </html>
+    """
+
+def build_details_html():
+    """Build technical details page"""
     return f"""
     <!DOCTYPE html>
     <html>
     <head>
-        <title>KABUK Webhook API</title>
+        <title>KABUK API - Technical Details</title>
         <meta charset="utf-8">
         <style>
             body {{ font-family: system-ui, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; background: #f5f5f5; }}
@@ -85,12 +232,14 @@ def build_index_html():
             .stat {{ flex: 1; background: #e7f3ff; padding: 15px; border-radius: 4px; text-align: center; }}
             .stat-value {{ font-size: 24px; font-weight: bold; color: #007bff; }}
             .stat-label {{ font-size: 14px; color: #666; margin-top: 5px; }}
+            .back-link {{ display: inline-block; margin-bottom: 20px; color: #8B5CF6; text-decoration: none; }}
         </style>
     </head>
     <body>
         <div class="container">
-            <h1>🏨 KABUK Webhook API</h1>
-            <p>ElevenLabs Agent Integration POC • Real-time property data from 10,230+ KABUK travel stories</p>
+            <a href="/" class="back-link">← Back to Chat</a>
+            <h1>🏨 KABUK API</h1>
+            <p>ElevenLabs Agent Integration • Real-time property data from 10,230+ travel stories</p>
             <div class="status">🟢 LIVE</div>
 
             <div class="stats">
@@ -166,17 +315,17 @@ def build_index_html():
                 <li>✅ Real-time webhook integration with ElevenLabs voice AI</li>
                 <li>✅ Multi-source data aggregation (properties + experiences + stories)</li>
                 <li>✅ Intelligent endpoint selection based on conversation context</li>
-                <li>✅ Japanese language support (10,230 real KABUK travel stories)</li>
+                <li>✅ Japanese language support (10,230 real HafH travel stories)</li>
                 <li>✅ Scalable architecture ready for production deployment</li>
             </ul>
 
             <h2>📈 Next Steps for Production</h2>
             <ul>
-                <li>✅ Deploy to production server (Render.com)</li>
-                <li>🔄 Add semantic search for better intent understanding</li>
-                <li>🔄 Enhance with guest review quotes and property images</li>
-                <li>🔄 Integrate with KABUK booking/availability APIs</li>
-                <li>🔄 Add authentication & rate limiting</li>
+                <li>Deploy to production server (currently: Cloudflare tunnel)</li>
+                <li>Add semantic search for better intent understanding</li>
+                <li>Enhance with guest review quotes and property images</li>
+                <li>Integrate with HafH booking/availability APIs</li>
+                <li>Add authentication & rate limiting</li>
             </ul>
 
             <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 14px;">
@@ -194,6 +343,13 @@ def index():
     # Return cached HTML with performance headers
     response = app.make_response(CACHED_INDEX_HTML)
     response.headers['Cache-Control'] = 'public, max-age=300'  # Cache for 5 minutes
+    response.headers['Content-Type'] = 'text/html; charset=utf-8'
+    return response
+
+@app.route('/details', methods=['GET'])
+def details():
+    """Technical details and API documentation"""
+    response = app.make_response(build_details_html())
     response.headers['Content-Type'] = 'text/html; charset=utf-8'
     return response
 
@@ -529,7 +685,7 @@ def intelligent_recommend():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
-    print("🚀 Starting KABUK webhook server...")
+    print("🚀 Starting HafH webhook server...")
     load_sample_data()
 
     # Build and cache landing page HTML for fast delivery
@@ -537,7 +693,6 @@ if __name__ == '__main__':
     print("✅ Landing page cached")
 
     print(f"📊 Serving {len(PROPERTIES)} properties")
-    # Render uses PORT environment variable
-    port = int(os.environ.get('PORT', 5001))
-    print(f"🌐 Server running on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    print("🌐 Server running on http://localhost:5000")
+    print("🔍 Search endpoint: POST http://localhost:5000/search")
+    app.run(host='0.0.0.0', port=5001, debug=False)
