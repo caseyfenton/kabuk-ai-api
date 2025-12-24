@@ -190,14 +190,8 @@ def build_index_html():
                 <p>Chat with Kyoko about your Japan trip preferences. She has access to 10,230+ real traveler stories and can help you find the perfect stay.</p>
 
                 <div class="elevenlabs-widget">
-                    <!-- ElevenLabs widget embed code will go here -->
-                    <div class="placeholder">
-                        <h3>🎤 Voice AI Widget</h3>
-                        <p>In production, the ElevenLabs Kyoko agent widget appears here.<br>Users can speak naturally about their travel preferences.</p>
-                        <p style="margin-top: 15px; font-size: 12px; opacity: 0.7;">
-                            Example: "I want a peaceful mountain retreat with hot springs in Nagano"
-                        </p>
-                    </div>
+                    <!-- ElevenLabs Kyoko Agent Widget -->
+                    <elevenlabs-convai agent-id="agent_0801kct0h5yyf6a84ss3yfn1b3ng"></elevenlabs-convai>
                 </div>
 
                 <a href="/details" class="details-link">📊 View API Details & Technical Info →</a>
@@ -207,6 +201,9 @@ def build_index_html():
         <div class="footer">
             © 2025 Kabuk International Inc. • Powered by ElevenLabs Conversational AI
         </div>
+
+        <!-- ElevenLabs Widget Script -->
+        <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
     </body>
     </html>
     """
