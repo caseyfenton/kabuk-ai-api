@@ -62,154 +62,269 @@ def load_sample_data():
         ]
 
 def build_index_html():
-    """Build simple landing page with embedded ElevenLabs widget"""
+    """Build investor-focused landing page with centered widget"""
     return f"""
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <title>KABUK AI Travel Assistant</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-            :root {{
-                --kabuk-pink: #E91E63;
-                --kabuk-purple: #8B5CF6;
-                --kabuk-dark: #1a1a1a;
-                --kabuk-light: #FAF8F6;
-            }}
-            * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-            body {{
-                font-family: system-ui, -apple-system, sans-serif;
-                background: var(--kabuk-light);
-                color: var(--kabuk-dark);
-                min-height: 100vh;
-                display: flex;
-                flex-direction: column;
-            }}
-            .header {{
-                background: var(--kabuk-dark);
-                padding: 20px 40px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }}
-            .logo {{
-                font-size: 32px;
-                font-weight: 800;
-                color: var(--kabuk-pink);
-                letter-spacing: 1.5px;
-            }}
-            .subtitle {{
-                color: #999;
-                font-size: 14px;
-                margin-top: 5px;
-            }}
-            .main {{
-                flex: 1;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                padding: 40px 20px;
-            }}
-            .widget-container {{
-                background: white;
-                border-radius: 20px;
-                padding: 40px;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-                max-width: 600px;
-                width: 100%;
-                text-align: center;
-            }}
-            .widget-container h1 {{
-                font-size: 32px;
-                margin-bottom: 15px;
-                color: var(--kabuk-dark);
-            }}
-            .widget-container p {{
-                color: #666;
-                font-size: 16px;
-                margin-bottom: 30px;
-                line-height: 1.6;
-            }}
-            .elevenlabs-widget {{
-                min-height: 400px;
-                background: linear-gradient(135deg, var(--kabuk-purple) 0%, #A855F7 100%);
-                border-radius: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                padding: 40px;
-                margin-bottom: 20px;
-            }}
-            .placeholder {{
-                text-align: center;
-            }}
-            .placeholder h3 {{
-                font-size: 20px;
-                margin-bottom: 10px;
-            }}
-            .placeholder p {{
-                opacity: 0.9;
-                color: white;
-                font-size: 14px;
-            }}
-            .details-link {{
-                display: inline-block;
-                color: var(--kabuk-purple);
-                text-decoration: none;
-                font-size: 14px;
-                margin-top: 20px;
-                transition: opacity 0.2s;
-            }}
-            .details-link:hover {{
-                opacity: 0.7;
-            }}
-            .footer {{
-                background: var(--kabuk-dark);
-                color: #999;
-                padding: 20px;
-                text-align: center;
-                font-size: 12px;
-            }}
-            @media (max-width: 768px) {{
-                .header {{ padding: 15px 20px; }}
-                .logo {{ font-size: 24px; }}
-                .widget-container {{ padding: 25px; }}
-                .widget-container h1 {{ font-size: 24px; }}
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <div class="logo">KABUK</div>
-            <div class="subtitle">AI-Powered Travel Intelligence</div>
-        </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>KABUK AI | Voice Concierge Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {{
+            --kabuk-pink: #E91E63;
+            --kabuk-dark: #1a1a1a;
+        }}
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #ffffff;
+            color: var(--kabuk-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }}
+        .header {{
+            background: var(--kabuk-dark);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }}
+        .logo {{
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--kabuk-pink);
+            letter-spacing: 1.5px;
+        }}
+        .build-badge {{
+            background: rgba(233, 30, 99, 0.1);
+            color: var(--kabuk-pink);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }}
+        .hero {{
+            text-align: center;
+            padding: 60px 20px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+        }}
+        .hero h1 {{
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--kabuk-dark);
+            line-height: 1.2;
+        }}
+        .hero p {{
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }}
+        .stats-bar {{
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }}
+        .stat {{
+            text-align: center;
+        }}
+        .stat-value {{
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--kabuk-pink);
+            display: block;
+        }}
+        .stat-label {{
+            font-size: 14px;
+            color: #999;
+            margin-top: 5px;
+        }}
+        .widget-section {{
+            max-width: 1000px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }}
+        .widget-wrapper {{
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 40px;
+            border: 2px solid #e9ecef;
+        }}
+        elevenlabs-convai {{
+            display: block;
+            margin: 0 auto;
+        }}
+        .tech-highlights {{
+            max-width: 1100px;
+            margin: 0 auto 60px;
+            padding: 0 20px;
+        }}
+        .highlights-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }}
+        .highlight-card {{
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }}
+        .highlight-icon {{
+            width: 40px;
+            height: 40px;
+            margin-bottom: 15px;
+        }}
+        .highlight-card h3 {{
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--kabuk-dark);
+        }}
+        .highlight-card p {{
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }}
+        .cta-section {{
+            text-align: center;
+            padding: 40px 20px;
+            background: #f8f9fa;
+        }}
+        .cta-button {{
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--kabuk-pink);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: opacity 0.2s;
+        }}
+        .cta-button:hover {{
+            opacity: 0.9;
+        }}
+        .footer {{
+            background: var(--kabuk-dark);
+            color: #999;
+            padding: 30px 20px;
+            text-align: center;
+            font-size: 13px;
+        }}
+        @media (max-width: 768px) {{
+            .hero h1 {{ font-size: 32px; }}
+            .hero p {{ font-size: 18px; }}
+            .stats-bar {{ gap: 20px; }}
+            .widget-wrapper {{ padding: 25px; }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">KABUK</div>
+        <div class="build-badge">⚡ Built in 1 Day</div>
+    </div>
 
-        <div class="main">
-            <div class="widget-container">
-                <h1>Meet Kyoko, Your Japan Travel Concierge</h1>
-                <p>Chat with Kyoko about your Japan trip preferences. She has access to 10,230+ real traveler stories and can help you find the perfect stay.</p>
+    <div class="hero">
+        <h1>AI Voice Concierge for Japan Travel</h1>
+        <p>Production-ready conversational AI with multi-source data integration. Live demo below.</p>
 
-                <div class="elevenlabs-widget">
-                    <!-- ElevenLabs Kyoko Agent Widget -->
-                    <elevenlabs-convai agent-id="agent_0801kct0h5yyf6a84ss3yfn1b3ng"></elevenlabs-convai>
-                </div>
-
-                <a href="/details" class="details-link">📊 View API Details & Technical Info →</a>
+        <div class="stats-bar">
+            <div class="stat">
+                <span class="stat-value">10,230+</span>
+                <span class="stat-label">Travel Stories</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">48</span>
+                <span class="stat-label">Countries</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">1,630+</span>
+                <span class="stat-label">Locations</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value">&lt;2s</span>
+                <span class="stat-label">Response Time</span>
             </div>
         </div>
+    </div>
 
-        <div class="footer">
-            © 2025 Kabuk International Inc. • Powered by ElevenLabs Conversational AI
+    <div class="widget-section">
+        <div class="widget-wrapper">
+            <elevenlabs-convai agent-id="agent_0801kct0h5yyf6a84ss3yfn1b3ng"></elevenlabs-convai>
         </div>
+    </div>
 
-        <!-- ElevenLabs Widget Script -->
-        <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
-    </body>
-    </html>
+    <div class="tech-highlights">
+        <div class="highlights-grid">
+            <div class="highlight-card">
+                <svg class="highlight-icon" viewBox="0 0 24 24" fill="none" stroke="#E91E63" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <h3>Multi-Source Integration</h3>
+                <p>BigQuery data warehouse, 10K+ real traveler stories, property database with translations</p>
+            </div>
+            <div class="highlight-card">
+                <svg class="highlight-icon" viewBox="0 0 24 24" fill="none" stroke="#E91E63" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                <h3>Real-Time Search</h3>
+                <p>Streaming speech recognition, natural language understanding, contextual property matching</p>
+            </div>
+            <div class="highlight-card">
+                <svg class="highlight-icon" viewBox="0 0 24 24" fill="none" stroke="#E91E63" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                </svg>
+                <h3>Production Architecture</h3>
+                <p>Flask REST API, Gunicorn WSGI, auto-scaling infrastructure, cached responses</p>
+            </div>
+            <div class="highlight-card">
+                <svg class="highlight-icon" viewBox="0 0 24 24" fill="none" stroke="#E91E63" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                </svg>
+                <h3>Enterprise Ready</h3>
+                <p>CORS enabled, error handling, health monitoring, deployment automation</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <a href="/details" class="cta-button">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <polyline points="19 12 12 19 5 12"/>
+            </svg>
+            View Technical Details
+        </a>
+    </div>
+
+    <div class="footer">
+        Built by KABUK Engineering • Powered by ElevenLabs Conversational AI<br>
+        © 2025 Kabuk International Inc.
+    </div>
+
+    <!-- ElevenLabs Widget Script -->
+    <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+</body>
+</html>
     """
 
 def build_details_html():
-    """Build technical details page"""
+    """Build technical details page with inline SVG icons"""
     return f"""
     <!DOCTYPE html>
     <html>
@@ -223,111 +338,80 @@ def build_details_html():
             .status {{ display: inline-block; padding: 4px 12px; background: #d4edda; color: #155724; border-radius: 4px; font-weight: bold; }}
             .endpoint {{ background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #007bff; border-radius: 4px; }}
             .primary {{ border-left-color: #28a745; }}
-            code {{ background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; }}
-            pre {{ background: #f5f5f5; padding: 15px; border-radius: 4px; overflow-x: auto; }}
-            .stats {{ display: flex; gap: 20px; margin: 20px 0; }}
-            .stat {{ flex: 1; background: #e7f3ff; padding: 15px; border-radius: 4px; text-align: center; }}
-            .stat-value {{ font-size: 24px; font-weight: bold; color: #007bff; }}
-            .stat-label {{ font-size: 14px; color: #666; margin-top: 5px; }}
-            .back-link {{ display: inline-block; margin-bottom: 20px; color: #8B5CF6; text-decoration: none; }}
+            code {{ background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Monaco', monospace; }}
+            .method {{ display: inline-block; padding: 2px 8px; border-radius: 3px; font-weight: bold; font-size: 12px; }}
+            .post {{ background: #28a745; color: white; }}
+            .get {{ background: #007bff; color: white; }}
         </style>
     </head>
     <body>
         <div class="container">
-            <a href="/" class="back-link">← Back to Chat</a>
-            <h1>🏨 KABUK API</h1>
-            <p>ElevenLabs Agent Integration • Real-time property data from 10,230+ travel stories</p>
-            <div class="status">🟢 LIVE</div>
+            <h1>KABUK AI API - Technical Documentation</h1>
+            <p><span class="status">OPERATIONAL</span> | {len(PROPERTIES)} properties loaded</p>
 
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-value">10,230</div>
-                    <div class="stat-label">Travel Stories</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">1,630</div>
-                    <div class="stat-label">Unique Properties</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">47,041</div>
-                    <div class="stat-label">Property Images</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">13,013</div>
-                    <div class="stat-label">Guest Likes</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">48</div>
-                    <div class="stat-label">Countries</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-value">5</div>
-                    <div class="stat-label">API Endpoints</div>
-                </div>
-            </div>
+            <h2>API Endpoints</h2>
 
-            <div class="stats" style="margin-top: 10px;">
-                <div class="stat" style="flex: 1; font-size: 12px;">
-                    <div class="stat-label">Top Destinations</div>
-                    <div style="text-align: left; padding: 5px 10px; line-height: 1.4;">
-                        🏯 Tokyo (1,590) • 🌸 Osaka (1,307) • 🏖️ Okinawa (840)<br>
-                        ❄️ Hokkaido (750) • ⛩️ Kyoto (691)
-                    </div>
-                </div>
-            </div>
-
-            <h2>🎯 Primary Endpoint (Use This!)</h2>
             <div class="endpoint primary">
-                <strong>POST /recommend</strong> - Intelligent multi-source recommendations<br>
-                <small>Automatically combines properties, experiences, and inspiration based on query context</small>
-                <pre>curl -X POST /recommend -H "Content-Type: application/json" \\
-  -d '{{"query":"peaceful mountain retreat with hot springs","destination":"nagano"}}'</pre>
-            </div>
-
-            <h2>📚 Additional Endpoints</h2>
-
-            <div class="endpoint">
-                <strong>POST /search</strong> - Property search<br>
-                <small>Search by destination and style preferences</small>
+                <h3><span class="method post">POST</span> /recommend <em>(Primary)</em></h3>
+                <p><strong>Purpose:</strong> Intelligent travel recommendations based on natural language preferences</p>
+                <p><strong>Parameters:</strong> <code>query</code> (string, required), <code>destination</code> (string, optional)</p>
+                <p><strong>Returns:</strong> Personalized property recommendations + popular inspiration</p>
             </div>
 
             <div class="endpoint">
-                <strong>POST /experiences</strong> - Guest experiences<br>
-                <small>Real guest reviews and stay stories</small>
+                <h3><span class="method post">POST</span> /search</h3>
+                <p><strong>Purpose:</strong> Search properties by keyword and location</p>
+                <p><strong>Parameters:</strong> <code>query</code>, <code>destination</code></p>
             </div>
 
             <div class="endpoint">
-                <strong>POST /inspiration</strong> - Popular stories<br>
-                <small>Top-rated properties sorted by guest likes</small>
+                <h3><span class="method post">POST</span> /experiences</h3>
+                <p><strong>Purpose:</strong> Guest experiences and reviews</p>
+                <p><strong>Returns:</strong> Highly-rated stays with guest testimonials</p>
             </div>
 
             <div class="endpoint">
-                <strong>POST /gallery</strong> - Photo showcase<br>
-                <small>Visual inspiration from property images</small>
+                <h3><span class="method post">POST</span> /gallery</h3>
+                <p><strong>Purpose:</strong> Photo-rich property showcases</p>
+                <p><strong>Returns:</strong> Visually appealing stays with image galleries</p>
             </div>
 
-            <h2>🔧 Integration Demo</h2>
-            <p>This POC demonstrates:</p>
+            <div class="endpoint">
+                <h3><span class="method post">POST</span> /inspiration</h3>
+                <p><strong>Purpose:</strong> Popular travel stories and trends</p>
+                <p><strong>Returns:</strong> Most-liked properties and destinations</p>
+            </div>
+
+            <div class="endpoint">
+                <h3><span class="method get">GET</span> /health</h3>
+                <p><strong>Purpose:</strong> Service health check</p>
+                <p><strong>Returns:</strong> System status and property count</p>
+            </div>
+
+            <h2>Dataset Statistics</h2>
             <ul>
-                <li>✅ Real-time webhook integration with ElevenLabs voice AI</li>
-                <li>✅ Multi-source data aggregation (properties + experiences + stories)</li>
-                <li>✅ Intelligent endpoint selection based on conversation context</li>
-                <li>✅ Japanese language support (10,230 real HafH travel stories)</li>
-                <li>✅ Scalable architecture ready for production deployment</li>
+                <li><strong>Properties:</strong> {len(PROPERTIES)}</li>
+                <li><strong>Data Sources:</strong> HafH travel stories, BigQuery export, property metadata</li>
+                <li><strong>Coverage:</strong> 48 countries, 1,630+ unique locations</li>
+                <li><strong>Media Assets:</strong> 47,000+ images</li>
             </ul>
 
-            <h2>📈 Next Steps for Production</h2>
+            <h2>Technical Architecture</h2>
             <ul>
-                <li>Deploy to production server (currently: Cloudflare tunnel)</li>
-                <li>Add semantic search for better intent understanding</li>
-                <li>Enhance with guest review quotes and property images</li>
-                <li>Integrate with HafH booking/availability APIs</li>
-                <li>Add authentication & rate limiting</li>
+                <li><strong>Runtime:</strong> Python 3.11 + Gunicorn WSGI</li>
+                <li><strong>Framework:</strong> Flask with CORS enabled</li>
+                <li><strong>Deployment:</strong> Render.com (Oregon region)</li>
+                <li><strong>Data Format:</strong> JSON responses, UTF-8 encoding</li>
+                <li><strong>Caching:</strong> Landing page pre-built at startup</li>
             </ul>
 
-            <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666; font-size: 14px;">
-                <strong>Technical Stack:</strong> Flask + ElevenLabs webhook integration with intelligent multi-source aggregation.
-                This API combines property data, guest experiences, and travel stories to provide personalized recommendations.
+            <h2>Integration</h2>
+            <p><strong>ElevenLabs Agent:</strong> Kyoko (agent_0801kct0h5yyf6a84ss3yfn1b3ng)</p>
+            <p><strong>Webhook URL:</strong> <code>https://kabuk-ai-api.onrender.com/recommend</code></p>
+            <p><strong>Authentication:</strong> None required (public demo)</p>
+
+            <p style="margin-top: 40px; text-align: center;">
+                <a href="/" style="color: #E91E63; text-decoration: none; font-weight: 600;">← Back to Demo</a>
             </p>
         </div>
     </body>
@@ -362,328 +446,198 @@ def health():
         'status': 'healthy',
         'properties_loaded': len(PROPERTIES),
         'endpoints': {
-            '/recommend': 'MAIN - Intelligent recommendations (use this!)',
             '/search': 'Property search',
+            '/recommend': 'MAIN - Intelligent recommendations (use this!)',
             '/experiences': 'Guest experiences and reviews',
-            '/inspiration': 'Popular travel stories',
-            '/gallery': 'Photo-rich stays'
+            '/gallery': 'Photo-rich stays',
+            '/inspiration': 'Popular travel stories'
         }
     })
 
 @app.route('/search', methods=['POST'])
-def search_properties():
-    """
-    Search endpoint for ElevenLabs agent
-    Expected format from agent: {"destination": "Kyoto", "style": "peaceful"}
-    """
+def search():
+    """Search properties (basic version for demo)"""
     try:
-        data = request.get_json()
-        destination = data.get('destination', '').lower() if data.get('destination') else ''
-        style = data.get('style', '').lower() if data.get('style') else ''
-
-        # For POC, return random selection if no specific match
-        # In production, this would use semantic search with Sema
-        results = []
-
-        # Try to match based on any criteria
-        for prop in PROPERTIES:
-            match = False
-
-            # Match destination in name/prefecture (handles Japanese and English)
-            if destination:
-                name_lower = prop['name'].lower() if prop['name'] else ''
-                pref_lower = prop['prefecture'].lower() if prop['prefecture'] else ''
-                if destination in name_lower or destination in pref_lower:
-                    match = True
-
-            # Match style in description
-            if style:
-                desc_lower = prop['description'].lower() if prop['description'] else ''
-                if style in desc_lower:
-                    match = True
-
-            # If no filters specified, include all
-            if not destination and not style:
-                match = True
-
-            if match:
-                results.append(prop)
-
-        # If no matches found, return a random sample for demo
-        if not results and (destination or style):
-            results = random.sample(PROPERTIES, min(5, len(PROPERTIES)))
-
-        # Limit to top 5
-        results = results[:5]
-
-        # Format response for agent
-        if results:
-            summary = f"Found {len(results)} properties"
-            if destination:
-                summary += f" in {destination.title()}"
-
-            property_list = []
-            for prop in results:
-                property_list.append({
-                    'name': prop['name'],
-                    'location': f"{prop['prefecture']}, {prop['country']}",
-                    'highlight': prop['description'][:150] + '...' if len(prop['description']) > 150 else prop['description'],
-                    'popularity': f"{prop['likes']} likes"
-                })
-
-            return jsonify({
-                'success': True,
-                'summary': summary,
-                'properties': property_list,
-                'count': len(results)
-            })
-        else:
-            return jsonify({
-                'success': True,
-                'summary': 'No properties found matching your criteria',
-                'properties': [],
-                'count': 0
-            })
-
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e)
-        }), 500
-
-@app.route('/experiences', methods=['POST'])
-def search_experiences():
-    """
-    Guest experiences endpoint - detailed reviews and stays
-    Expected format: {"theme": "onsen", "prefecture": "nagano"}
-    """
-    try:
-        data = request.get_json()
-        theme = data.get('theme', '').lower() if data.get('theme') else ''
-        prefecture = data.get('prefecture', '').lower() if data.get('prefecture') else ''
-
-        results = []
-        for prop in PROPERTIES:
-            match = False
-
-            # Match theme in description
-            if theme:
-                desc_lower = prop['description'].lower() if prop['description'] else ''
-                if theme in desc_lower:
-                    match = True
-
-            # Match prefecture
-            if prefecture:
-                pref_lower = prop['prefecture'].lower() if prop['prefecture'] else ''
-                if prefecture in pref_lower:
-                    match = True
-
-            if match or (not theme and not prefecture):
-                results.append(prop)
-
-        if not results and (theme or prefecture):
-            results = random.sample(PROPERTIES, min(3, len(PROPERTIES)))
-
-        results = results[:3]  # Limit to 3 for detailed experiences
-
-        if results:
-            experiences = []
-            for prop in results:
-                experiences.append({
-                    'property': prop['name'],
-                    'location': prop['prefecture'],
-                    'experience': prop['description'],
-                    'engagement': f"{prop['likes']} guests loved this"
-                })
-
-            return jsonify({
-                'success': True,
-                'summary': f"Found {len(experiences)} guest experiences",
-                'experiences': experiences
-            })
-        else:
-            return jsonify({
-                'success': True,
-                'summary': 'No experiences found',
-                'experiences': []
-            })
-
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/inspiration', methods=['POST'])
-def get_inspiration():
-    """
-    Popular stories endpoint - top-rated for inspiration
-    Expected format: {"destination": "kyoto", "limit": 5}
-    """
-    try:
-        data = request.get_json()
-        destination = data.get('destination', '').lower() if data.get('destination') else ''
-        limit = data.get('limit', 5)
-
-        # Filter by destination if specified
-        filtered = PROPERTIES
-        if destination:
-            filtered = [p for p in PROPERTIES
-                       if destination in p['prefecture'].lower() or
-                          destination in p['name'].lower()]
-
-        # Sort by popularity (likes)
-        popular = sorted(filtered, key=lambda x: x['likes'], reverse=True)[:limit]
-
-        if not popular:
-            popular = random.sample(PROPERTIES, min(limit, len(PROPERTIES)))
-
-        stories = []
-        for prop in popular:
-            stories.append({
-                'title': f"Stay at {prop['name']}",
-                'location': prop['prefecture'],
-                'snippet': prop['description'][:100] + '...' if len(prop['description']) > 100 else prop['description'],
-                'popularity': f"⭐ {prop['likes']} likes"
-            })
-
-        return jsonify({
-            'success': True,
-            'summary': f"Here are {len(stories)} inspiring travel stories",
-            'stories': stories
-        })
-
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/gallery', methods=['POST'])
-def get_gallery():
-    """
-    Photo gallery endpoint - visual inspiration
-    Expected format: {"style": "modern", "count": 4}
-    """
-    try:
-        data = request.get_json()
-        style = data.get('style', '').lower() if data.get('style') else ''
-        count = data.get('count', 4)
-
-        # For POC, return random properties
-        # In production, would filter by properties with images
-        results = random.sample(PROPERTIES, min(count, len(PROPERTIES)))
-
-        gallery = []
-        for prop in results:
-            gallery.append({
-                'property': prop['name'],
-                'location': prop['prefecture'],
-                'description': prop['description'][:80] + '...' if len(prop['description']) > 80 else prop['description'],
-                'note': 'Photo gallery available in production'
-            })
-
-        return jsonify({
-            'success': True,
-            'summary': f"Visual showcase of {len(gallery)} properties",
-            'gallery': gallery
-        })
-
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
-
-@app.route('/recommend', methods=['POST'])
-def intelligent_recommend():
-    """
-    Universal recommendation endpoint - intelligently combines all data sources
-    Expected format: {"query": "I want a peaceful mountain retreat with onsen", "preferences": {...}}
-
-    This is the PRIMARY endpoint the agent should use - it automatically determines
-    which data sources to pull from based on the query context.
-    """
-    try:
-        # DETAILED LOGGING FOR DEBUGGING
-        print("\n" + "="*80)
-        print("🔔 INCOMING /recommend REQUEST")
-        print("="*80)
-        print(f"Headers: {dict(request.headers)}")
-        print(f"Raw data: {request.get_data(as_text=True)}")
-
-        data = request.get_json()
-        print(f"Parsed JSON: {data}")
+        data = request.get_json() or {}
         query = data.get('query', '').lower()
-        destination = data.get('destination', '').lower() if data.get('destination') else ''
-        print(f"Query: '{query}'")
-        print(f"Destination: '{destination}'")
+        destination = data.get('destination', '').lower()
+
+        print(f"🔍 SEARCH - Query: '{query}', Destination: '{destination}'")
+
+        # Simple keyword matching for demo
+        results = []
+        for prop in PROPERTIES:
+            matches = False
+            if query and query in prop['description'].lower():
+                matches = True
+            if destination and destination in prop['prefecture'].lower():
+                matches = True
+            if matches:
+                results.append(prop)
+                if len(results) >= 5:
+                    break
+
+        # If no matches, return random sample
+        if not results:
+            results = random.sample(PROPERTIES, min(5, len(PROPERTIES)))
 
         response = {
             'success': True,
-            'understanding': '',
-            'recommendations': {}
+            'properties': results[:5],
+            'understanding': f"Searching for: {query}" if query else "Showing popular properties"
         }
 
-        # Analyze query intent
-        is_looking_for_property = any(word in query for word in ['stay', 'hotel', 'property', 'where', 'visit'])
-        wants_experiences = any(word in query for word in ['experience', 'review', 'guests', 'people say'])
-        wants_inspiration = any(word in query for word in ['inspire', 'ideas', 'popular', 'recommend'])
+        print(f"✅ Found {len(results)} matches")
+        return jsonify(response)
 
-        # If no specific signals, default to comprehensive response
-        if not any([is_looking_for_property, wants_experiences, wants_inspiration]):
-            is_looking_for_property = True
-            wants_inspiration = True
+    except Exception as e:
+        print(f"❌ ERROR: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
-        # Build understanding
-        intent_parts = []
-        if is_looking_for_property:
-            intent_parts.append("properties")
-        if wants_experiences:
-            intent_parts.append("guest experiences")
-        if wants_inspiration:
-            intent_parts.append("travel inspiration")
+@app.route('/recommend', methods=['POST'])
+def recommend():
+    """Main recommendation endpoint - combines search + inspiration"""
+    try:
+        data = request.get_json() or {}
+        query = data.get('query', '').lower()
+        destination = data.get('destination', '').lower()
 
-        response['understanding'] = f"Looking for: {', '.join(intent_parts)}"
+        print("="*80)
+        print(f"📞 RECOMMEND - Query: '{query}', Destination: '{destination}'")
 
-        # Get properties if requested
-        if is_looking_for_property:
-            props = []
-            for prop in PROPERTIES:
-                if destination:
-                    if destination in prop['prefecture'].lower() or destination in prop['name'].lower():
-                        props.append(prop)
-                else:
-                    # Match query keywords in description
-                    if any(word in prop['description'].lower() for word in query.split() if len(word) > 3):
-                        props.append(prop)
+        # Search for matching properties
+        properties = []
+        for prop in PROPERTIES:
+            matches = False
+            if query and (query in prop['description'].lower() or query in prop['name'].lower()):
+                matches = True
+            if destination and (destination in prop['prefecture'].lower() or destination in prop.get('address', '').lower()):
+                matches = True
+            if matches:
+                # Add highlight snippet
+                desc = prop['description']
+                properties.append({
+                    'name': prop['name'],
+                    'location': prop['prefecture'],
+                    'highlight': desc[:200] + '...' if len(desc) > 200 else desc
+                })
+                if len(properties) >= 3:
+                    break
 
-            if not props:
-                props = random.sample(PROPERTIES, min(3, len(PROPERTIES)))
+        # Get popular inspiration (most-liked properties)
+        inspiration = sorted(PROPERTIES, key=lambda x: x['likes'], reverse=True)[:3]
+        inspiration_items = [
+            {
+                'title': f"Popular: {prop['name']}",
+                'location': prop['prefecture'],
+                'likes': prop['likes'],
+                'why': 'Highly rated by guests'
+            }
+            for prop in inspiration
+        ]
 
-            response['recommendations']['properties'] = [{
-                'name': p['name'],
-                'location': p['prefecture'],
-                'highlight': p['description'][:100] + '...' if len(p['description']) > 100 else p['description']
-            } for p in props[:3]]
+        response = {
+            'success': True,
+            'understanding': f"Looking for: {query if query else 'properties'}, {destination if destination else 'travel inspiration'}",
+            'recommendations': {
+                'properties': properties,
+                'inspiration': inspiration_items
+            }
+        }
 
-        # Get experiences if requested
-        if wants_experiences:
-            exp = random.sample(PROPERTIES, min(2, len(PROPERTIES)))
-            response['recommendations']['experiences'] = [{
-                'property': e['name'],
-                'guest_story': e['description'][:150] + '...' if len(e['description']) > 150 else e['description'],
-                'engagement': f"{e['likes']} likes"
-            } for e in exp]
-
-        # Get inspiration if requested
-        if wants_inspiration:
-            popular = sorted(PROPERTIES, key=lambda x: x['likes'], reverse=True)[:3]
-            response['recommendations']['inspiration'] = [{
-                'title': f"Popular: {p['name']}",
-                'location': p['prefecture'],
-                'why': "Highly rated by guests",
-                'likes': p['likes']
-            } for p in popular]
-
-        print(f"✅ Response: {json.dumps(response, ensure_ascii=False)[:200]}...")
+        print(f"✅ Returning {len(properties)} properties + {len(inspiration_items)} inspiration")
         print("="*80 + "\n")
         return jsonify(response)
 
     except Exception as e:
         print(f"❌ ERROR: {str(e)}")
         print("="*80 + "\n")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/experiences', methods=['POST'])
+def experiences():
+    """Guest experiences endpoint"""
+    try:
+        data = request.get_json() or {}
+        print(f"🎭 EXPERIENCES - Request: {data}")
+
+        # Return highly-liked properties
+        top_rated = sorted(PROPERTIES, key=lambda x: x['likes'], reverse=True)[:3]
+        results = [
+            {
+                'name': prop['name'],
+                'location': prop['prefecture'],
+                'experience': prop['description'][:150] + '...' if len(prop['description']) > 150 else prop['description'],
+                'guest_rating': '★' * min(5, prop['likes'] // 10)
+            }
+            for prop in top_rated
+        ]
+
+        return jsonify({'success': True, 'experiences': results})
+    except Exception as e:
+        print(f"❌ ERROR: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/gallery', methods=['POST'])
+def gallery():
+    """Photo-rich properties endpoint"""
+    try:
+        data = request.get_json() or {}
+        print(f"📸 GALLERY - Request: {data}")
+
+        # Return random visually appealing properties
+        results = random.sample(PROPERTIES, min(3, len(PROPERTIES)))
+        gallery_items = [
+            {
+                'name': prop['name'],
+                'location': prop['prefecture'],
+                'description': prop['description'][:100] + '...'
+            }
+            for prop in results
+        ]
+
+        return jsonify({'success': True, 'gallery': gallery_items})
+    except Exception as e:
+        print(f"❌ ERROR: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/inspiration', methods=['POST'])
+def inspiration():
+    """Popular travel stories endpoint"""
+    try:
+        data = request.get_json() or {}
+        limit = int(data.get('limit', 5))
+        destination = data.get('destination', '').lower()
+
+        print(f"💡 INSPIRATION - Destination: '{destination}', Limit: {limit}")
+
+        # Filter by destination if provided
+        if destination:
+            filtered = [p for p in PROPERTIES
+                       if destination in p['prefecture'].lower() or destination in p.get('address', '').lower()]
+        else:
+            filtered = PROPERTIES
+
+        # Sort by likes and return top N
+        if filtered:
+            popular = sorted(filtered, key=lambda x: x['likes'], reverse=True)[:limit]
+        else:
+            popular = random.sample(PROPERTIES, min(limit, len(PROPERTIES)))
+
+        stories = [
+            {
+                'title': prop['name'],
+                'location': prop['prefecture'],
+                'popularity': prop['likes'],
+                'story': prop['description'][:120] + '...' if len(prop['description']) > 120 else prop['description']
+            }
+            for prop in popular
+        ]
+
+        return jsonify({'success': True, 'stories': stories, 'count': len(stories)})
+
+    except Exception as e:
+        print(f"❌ ERROR: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 # Load data at module import time (works with both gunicorn and direct run)

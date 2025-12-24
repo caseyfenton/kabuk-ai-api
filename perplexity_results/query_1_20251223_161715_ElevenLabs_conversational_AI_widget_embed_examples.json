@@ -1,0 +1,3 @@
+{
+  "error": "Error code: 400 - {'error': {'message': \"The 'sonar-reasoning' model has been deprecated and is no longer available. Please refer to https://docs.perplexity.ai/getting-started/models for supported models.\", 'type': 'invalid_model', 'code': 400}}"
+}

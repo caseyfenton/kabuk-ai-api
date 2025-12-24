@@ -1,0 +1,90 @@
+{
+  "decision_context": {
+    "outcome": "ambiguous",
+    "confidence": 0.75,
+    "complexity": "medium"
+  },
+  "entity_graph": [
+    {
+      "key": "widget_name",
+      "value": "elevenlabs-convai",
+      "data_type": "string"
+    },
+    {
+      "key": "script_url",
+      "value": "https://unpkg.com/@elevenlabs/convai-widget-embed",
+      "data_type": "string"
+    },
+    {
+      "key": "required_attribute",
+      "value": "agent-id",
+      "data_type": "string"
+    },
+    {
+      "key": "agent_id_usage",
+      "value": "Set via el.setAttribute('agent-id', browser.webfuseSession.env.AGENT_KEY)",
+      "data_type": "string"
+    },
+    {
+      "key": "official_docs_convai",
+      "value": "https://docs.convai.com",
+      "data_type": "string"
+    },
+    {
+      "key": "official_docs_elevenlabs",
+      "value": "https://elevenlabs.io/docs/agents-platform/overview",
+      "data_type": "string"
+    },
+    {
+      "key": "widget_events",
+      "value": "elevenlabs-convai:call",
+      "data_type": "string"
+    },
+    {
+      "key": "integration_type",
+      "value": "Convai-ElevenLabs collaboration for voice agents",
+      "data_type": "string"
+    }
+  ],
+  "module_index": [
+    {
+      "id": 1,
+      "tags": [
+        "usage_example",
+        "code"
+      ],
+      "token_estimate": 450
+    },
+    {
+      "id": 2,
+      "tags": [
+        "official_docs",
+        "elevenlabs"
+      ],
+      "token_estimate": 300
+    },
+    {
+      "id": 3,
+      "tags": [
+        "convai_integration",
+        "api_key"
+      ],
+      "token_estimate": 350
+    },
+    {
+      "id": 4,
+      "tags": [
+        "parameters",
+        "configuration"
+      ],
+      "token_estimate": 250
+    },
+    {
+      "id": 5,
+      "tags": [
+        "limitations"
+      ],
+      "token_estimate": 150
+    }
+  ]
+}

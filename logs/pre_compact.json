@@ -14,5 +14,13 @@
     "hook_event_name": "PreCompact",
     "trigger": "auto",
     "custom_instructions": null
+  },
+  {
+    "session_id": "5d73dc64-849b-4d94-8465-4734dfe6ea72",
+    "transcript_path": "/Users/casey/.claude/projects/-Users-casey-pro-KABUK/5d73dc64-849b-4d94-8465-4734dfe6ea72.jsonl",
+    "cwd": "/Users/casey/pro/KABUK/render-deploy",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
   }
 ]
