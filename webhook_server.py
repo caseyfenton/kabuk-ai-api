@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
 import random
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -17,6 +18,10 @@ CACHED_INDEX_HTML = None
 
 # Load sample properties from travel stories
 PROPERTIES = []
+
+# In-memory conversation state storage
+# TODO: Replace with Redis or database for production
+CONVERSATION_STATE = {}
 
 def load_sample_data():
     """Load ALL properties from hafh_stories"""
@@ -639,6 +644,253 @@ def inspiration():
     except Exception as e:
         print(f"❌ ERROR: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
+
+
+# ============================================================================
+# CONVERSATION RESUMPTION ENDPOINTS
+# ============================================================================
+
+@app.route('/save-progress', methods=['POST'])
+def save_progress():
+    """
+    Save conversation state for resumption
+
+    Request body:
+    {
+        "email": "user@example.com",
+        "conversation_id": "conv_abc123",
+        "preferences": {
+            "destination": "Kyoto",
+            "style": "traditional",
+            "budget": "mid",
+            "dates": "2025-03-15 to 2025-03-20"
+        },
+        "viewed_properties": ["pid_1", "pid_2"],
+        "notes": "User prefers ryokan with private onsen"
+    }
+
+    Returns: {success: true, message: "Progress saved"}
+    """
+    try:
+        data = request.json
+        email = data.get('email')
+        conversation_id = data.get('conversation_id')
+
+        if not email and not conversation_id:
+            return jsonify({
+                'success': False,
+                'error': 'Email or conversation_id required'
+            }), 400
+
+        # Create state object
+        state = {
+            'email': email,
+            'conversation_id': conversation_id,
+            'preferences': data.get('preferences', {}),
+            'viewed_properties': data.get('viewed_properties', []),
+            'notes': data.get('notes', ''),
+            'saved_at': datetime.utcnow().isoformat(),
+            'last_updated': datetime.utcnow().isoformat()
+        }
+
+        # Store by both email and conversation_id for lookup flexibility
+        if email:
+            CONVERSATION_STATE[f"email:{email}"] = state
+        if conversation_id:
+            CONVERSATION_STATE[f"conv:{conversation_id}"] = state
+
+        print(f"💾 Saved conversation state for {email or conversation_id}")
+
+        return jsonify({
+            'success': True,
+            'message': 'Progress saved',
+            'state_keys': [
+                f"email:{email}" if email else None,
+                f"conv:{conversation_id}" if conversation_id else None
+            ]
+        })
+
+    except Exception as e:
+        print(f"❌ ERROR saving progress: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/resume-conversation', methods=['POST'])
+def resume_conversation():
+    """
+    Retrieve saved conversation state
+
+    Request body:
+    {
+        "email": "user@example.com"  // OR
+        "conversation_id": "conv_abc123"
+    }
+
+    Returns: {success: true, state: {...}}
+    """
+    try:
+        data = request.json
+        email = data.get('email')
+        conversation_id = data.get('conversation_id')
+
+        if not email and not conversation_id:
+            return jsonify({
+                'success': False,
+                'error': 'Email or conversation_id required'
+            }), 400
+
+        # Try to find state
+        state = None
+        lookup_key = None
+
+        if email:
+            lookup_key = f"email:{email}"
+            state = CONVERSATION_STATE.get(lookup_key)
+
+        if not state and conversation_id:
+            lookup_key = f"conv:{conversation_id}"
+            state = CONVERSATION_STATE.get(lookup_key)
+
+        if not state:
+            return jsonify({
+                'success': False,
+                'message': 'No saved conversation found',
+                'is_new_user': True
+            }), 404
+
+        print(f"📖 Retrieved conversation state for {email or conversation_id}")
+
+        return jsonify({
+            'success': True,
+            'state': state,
+            'is_returning_user': True,
+            'message': f"Welcome back! I found your conversation from {state.get('saved_at', 'earlier')}"
+        })
+
+    except Exception as e:
+        print(f"❌ ERROR resuming conversation: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/get-user-history', methods=['POST'])
+def get_user_history():
+    """
+    Get user's conversation history
+
+    Request body:
+    {
+        "email": "user@example.com"
+    }
+
+    Returns: {success: true, conversations: [...]}
+    """
+    try:
+        data = request.json
+        email = data.get('email')
+
+        if not email:
+            return jsonify({
+                'success': False,
+                'error': 'Email required'
+            }), 400
+
+        # In production, this would query database for all conversations
+        # For now, just return the single stored state if it exists
+        lookup_key = f"email:{email}"
+        state = CONVERSATION_STATE.get(lookup_key)
+
+        conversations = []
+        if state:
+            conversations.append({
+                'date': state.get('saved_at'),
+                'preferences': state.get('preferences', {}),
+                'properties_viewed': len(state.get('viewed_properties', [])),
+                'notes': state.get('notes', '')
+            })
+
+        return jsonify({
+            'success': True,
+            'email': email,
+            'total_conversations': len(conversations),
+            'conversations': conversations
+        })
+
+    except Exception as e:
+        print(f"❌ ERROR getting user history: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@app.route('/update-progress', methods=['POST'])
+def update_progress():
+    """
+    Update existing conversation state (e.g., add viewed property)
+
+    Request body:
+    {
+        "email": "user@example.com",
+        "add_viewed_property": "pid_123",
+        "update_preferences": {"budget": "high"},
+        "add_note": "User loved the mountain views"
+    }
+    """
+    try:
+        data = request.json
+        email = data.get('email')
+        conversation_id = data.get('conversation_id')
+
+        if not email and not conversation_id:
+            return jsonify({
+                'success': False,
+                'error': 'Email or conversation_id required'
+            }), 400
+
+        # Find existing state
+        lookup_key = f"email:{email}" if email else f"conv:{conversation_id}"
+        state = CONVERSATION_STATE.get(lookup_key)
+
+        if not state:
+            return jsonify({
+                'success': False,
+                'error': 'No existing conversation found'
+            }), 404
+
+        # Update state
+        if 'add_viewed_property' in data:
+            viewed = state.get('viewed_properties', [])
+            prop_id = data['add_viewed_property']
+            if prop_id not in viewed:
+                viewed.append(prop_id)
+                state['viewed_properties'] = viewed
+
+        if 'update_preferences' in data:
+            prefs = state.get('preferences', {})
+            prefs.update(data['update_preferences'])
+            state['preferences'] = prefs
+
+        if 'add_note' in data:
+            existing_notes = state.get('notes', '')
+            new_note = data['add_note']
+            state['notes'] = f"{existing_notes}\n{new_note}" if existing_notes else new_note
+
+        state['last_updated'] = datetime.utcnow().isoformat()
+
+        # Save updated state
+        CONVERSATION_STATE[lookup_key] = state
+        if email and conversation_id:
+            CONVERSATION_STATE[f"conv:{conversation_id}"] = state
+
+        print(f"🔄 Updated conversation state for {email or conversation_id}")
+
+        return jsonify({
+            'success': True,
+            'message': 'Progress updated',
+            'state': state
+        })
+
+    except Exception as e:
+        print(f"❌ ERROR updating progress: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
 
 # Load data at module import time (works with both gunicorn and direct run)
 print("🚀 Starting HafH webhook server...")

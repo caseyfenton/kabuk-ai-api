@@ -1,0 +1,228 @@
+{
+  "conversation_resumption_tools": [
+    {
+      "name": "save_user_progress",
+      "type": "webhook",
+      "description": "Save user's conversation progress including email, preferences, and viewed properties so they can resume later if the call drops or they want to continue another time",
+      "url": "https://kabuk-ai-api.onrender.com/save-progress",
+      "method": "POST",
+      "parameters": [
+        {
+          "name": "email",
+          "type": "string",
+          "description": "User's email address for identification and future resumption",
+          "required": true
+        },
+        {
+          "name": "conversation_id",
+          "type": "string",
+          "description": "ElevenLabs conversation ID from current session",
+          "required": false
+        },
+        {
+          "name": "preferences",
+          "type": "object",
+          "description": "User's travel preferences collected so far (destination, style, budget, dates, etc.)",
+          "required": false,
+          "properties": {
+            "destination": {"type": "string"},
+            "style": {"type": "string"},
+            "budget": {"type": "string"},
+            "dates": {"type": "string"},
+            "group_size": {"type": "number"},
+            "special_interests": {"type": "array"}
+          }
+        },
+        {
+          "name": "viewed_properties",
+          "type": "array",
+          "description": "Array of property IDs the user has viewed or discussed",
+          "required": false
+        },
+        {
+          "name": "notes",
+          "type": "string",
+          "description": "Agent notes about user's preferences or important details to remember",
+          "required": false
+        }
+      ],
+      "when_to_use": [
+        "After collecting user's email",
+        "After user shares significant preferences",
+        "When user indicates they need to pause the conversation",
+        "Before ending the call",
+        "After showing properties the user is interested in"
+      ]
+    },
+    {
+      "name": "resume_user_conversation",
+      "type": "webhook",
+      "description": "Check if a returning user has previous conversation state saved. Call this when user provides their email to see if they're continuing a previous conversation",
+      "url": "https://kabuk-ai-api.onrender.com/resume-conversation",
+      "method": "POST",
+      "parameters": [
+        {
+          "name": "email",
+          "type": "string",
+          "description": "User's email address to look up saved conversation",
+          "required": true
+        }
+      ],
+      "returns": {
+        "success": "boolean",
+        "is_returning_user": "boolean",
+        "state": {
+          "email": "string",
+          "conversation_id": "string",
+          "preferences": "object",
+          "viewed_properties": "array",
+          "notes": "string",
+          "saved_at": "ISO datetime string"
+        },
+        "message": "string"
+      },
+      "when_to_use": [
+        "Immediately after user provides their email",
+        "At the start of conversation if user mentions they talked before",
+        "When user asks to continue from last time"
+      ],
+      "usage_example": "User provides email → Call resume_user_conversation → If is_returning_user=true → Say 'Welcome back! I see we talked about [preferences] last time. Would you like to continue from there or start fresh?'"
+    },
+    {
+      "name": "update_user_progress",
+      "type": "webhook",
+      "description": "Update existing saved conversation with new information (add viewed property, update preferences, add notes)",
+      "url": "https://kabuk-ai-api.onrender.com/update-progress",
+      "method": "POST",
+      "parameters": [
+        {
+          "name": "email",
+          "type": "string",
+          "description": "User's email address",
+          "required": true
+        },
+        {
+          "name": "add_viewed_property",
+          "type": "string",
+          "description": "Property ID to add to user's viewed list",
+          "required": false
+        },
+        {
+          "name": "update_preferences",
+          "type": "object",
+          "description": "Preferences to update or add",
+          "required": false
+        },
+        {
+          "name": "add_note",
+          "type": "string",
+          "description": "Note to append to conversation history",
+          "required": false
+        }
+      ],
+      "when_to_use": [
+        "After user views property details",
+        "When user updates their preferences",
+        "When learning important new information about the user"
+      ]
+    },
+    {
+      "name": "get_user_conversation_history",
+      "type": "webhook",
+      "description": "Get user's full conversation history to reference past interactions",
+      "url": "https://kabuk-ai-api.onrender.com/get-user-history",
+      "method": "POST",
+      "parameters": [
+        {
+          "name": "email",
+          "type": "string",
+          "description": "User's email address",
+          "required": true
+        }
+      ],
+      "when_to_use": [
+        "When user asks 'what did we discuss before?'",
+        "To show user their previous property interests",
+        "For analytics or follow-up purposes"
+      ]
+    }
+  ],
+  "configuration_instructions": {
+    "step_1": "In ElevenLabs dashboard, go to your Kyoko agent settings",
+    "step_2": "Navigate to 'Tools' tab → 'Add Webhook Tool'",
+    "step_3": "For each tool above, create a new webhook tool with:",
+    "fields": [
+      "Name: Use the 'name' field (e.g., save_user_progress)",
+      "Description: Copy the 'description' field exactly",
+      "URL: Use the 'url' field",
+      "Method: POST",
+      "Parameters: Add each parameter with its type and description",
+      "Wait for Response: Enabled (for all tools)"
+    ],
+    "step_4": "Update agent system prompt with conversation resumption instructions (see system_prompt_additions.txt)"
+  },
+  "agent_behavior_guidelines": {
+    "email_collection": {
+      "when": "Early in conversation (after initial greeting and preference gathering)",
+      "how": "Natural ask: 'Before we continue, what's the best email to send your personalized itinerary to?'",
+      "immediately_after": "Call resume_user_conversation to check if returning user"
+    },
+    "returning_user_handling": {
+      "if_found": "Say: 'Welcome back! I see we talked about [X] last time. Would you like to pick up where we left off, or explore something new?'",
+      "use_saved_preferences": "Reference their previous preferences to provide continuity",
+      "update_if_changed": "If they change preferences, call update_user_progress"
+    },
+    "progress_saving": {
+      "frequency": "After each significant interaction (email collected, preferences shared, properties viewed)",
+      "call_end": "Always save progress before ending call",
+      "dropped_call_recovery": "If connection drops, user can call back and resume with same email"
+    },
+    "property_tracking": {
+      "when_shown": "After calling showProperties client tool, save property IDs to viewed_properties",
+      "when_highlighted": "When highlighting specific property, call update_user_progress with add_viewed_property",
+      "for_follow_up": "Use viewed properties list for email follow-up and future recommendations"
+    }
+  },
+  "data_persistence_notes": {
+    "current_implementation": "In-memory storage (CONVERSATION_STATE dict)",
+    "limitation": "Data lost when server restarts",
+    "production_upgrade": "Replace with Redis or PostgreSQL for persistent storage",
+    "retention_period": "730 days (matching ElevenLabs conversation retention)",
+    "privacy": "Store minimal PII, allow user deletion requests"
+  },
+  "testing_scenarios": [
+    {
+      "scenario": "New user",
+      "steps": [
+        "User: 'I want to plan a trip to Japan'",
+        "Kyoko: Asks preferences",
+        "User: Shares preferences",
+        "Kyoko: 'What email should I send your itinerary to?'",
+        "User: Provides email (test@example.com)",
+        "Kyoko: Calls resume_user_conversation → is_returning_user=false",
+        "Kyoko: Continues normally, calls save_user_progress"
+      ]
+    },
+    {
+      "scenario": "Returning user",
+      "steps": [
+        "User: 'I talked to you before, my email is test@example.com'",
+        "Kyoko: Calls resume_user_conversation",
+        "Response: is_returning_user=true, preferences={destination: 'Kyoto', style: 'traditional'}",
+        "Kyoko: 'Welcome back! I see you were interested in traditional Kyoto ryokans. Want to continue from there?'",
+        "User: 'Yes'",
+        "Kyoko: Uses saved preferences, shows previously viewed properties"
+      ]
+    },
+    {
+      "scenario": "Dropped call recovery",
+      "steps": [
+        "Call 1: User provides email, shares preferences, views 3 properties → Call drops",
+        "Call 2 (later): User calls back, provides same email",
+        "Kyoko: Calls resume_user_conversation",
+        "Kyoko: 'Welcome back! We were looking at mountain hot springs. Ready to continue?'",
+        "User: Continues from where they left off"
+      ]
+    }
+  ]
+}
